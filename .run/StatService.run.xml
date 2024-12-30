@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="StatService" type="Application" factoryName="Application">
+    <option name="ALTERNATIVE_JRE_PATH" value="corretto-21" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="ru.practicum.StatServiceApp" />
+    <module name="stat-server" />
+    <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=test" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
