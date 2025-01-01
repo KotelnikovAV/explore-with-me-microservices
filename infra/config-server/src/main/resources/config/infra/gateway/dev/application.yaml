@@ -1,0 +1,38 @@
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+    gateway:
+      discovery.locator.enabled: true
+      routes:
+        - id: main_service_route
+          uri: lb://main-service
+          predicates:
+            - Path=/**
+          filters:
+            - PrefixPath=/api/v1
+        - id: stat_server_circuitbreaker_route
+          uri: lb://stat_server
+          predicates:
+            - Path=/**
+          filters:
+            - PrefixPath=/api/v1
+            - CircuitBreaker=StatClient
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      StatClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+server:
+  port: 8080
