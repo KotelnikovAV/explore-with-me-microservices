@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import static ru.practicum.constants.Constants.FORMATTER;
 import static ru.practicum.event.model.QEvent.event;
 import static ru.practicum.utility.Constants.ACTUAL_VERSION_EVENT_SERVER;
+import static ru.practicum.utility.Constants.DEFAULT_SEARCH_START_DATE;
 
 @Service
 @Slf4j
@@ -467,8 +468,9 @@ public class EventServiceImpl implements EventService {
         List<String> url = events.stream()
                 .map(event -> ACTUAL_VERSION_EVENT_SERVER + "/events/" + event.getId())
                 .toList();
+
         Optional<List<ViewStatsDto>> viewStatsDto = Optional.ofNullable(statClient
-                .findByParams(LocalDateTime.now().minusYears(20).format(FORMATTER),
+                .findByParams(DEFAULT_SEARCH_START_DATE.format(FORMATTER),
                         LocalDateTime.now().format(FORMATTER),
                         url,
                         true)

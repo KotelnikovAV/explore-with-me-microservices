@@ -30,9 +30,7 @@ public class EndpointHitController implements StatClient {
     public void save(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         log.info("Received a POST request to save statistics {}", endpointHitDto);
         endpointHitService.save(endpointHitMapper.endpointHitDtoToEndpointHit(endpointHitDto));
-        Thread.sleep(500); // не понимаю, но почему-то без принудительной задержки при сохранении получение статистики
-        // срабатывает через раз, как будто бы иногда данные не успевают сохраниться, что не должно быть, ведь у нас
-        // не идет обработка данных в нескольких потоках, мы же отправили запрос на сохранение и ждем ответа
+        Thread.sleep(300); // твою логику я понял, но я не нашел, чтобы где-то еще был введен таймаут
     }
 
     @GetMapping("stats")
