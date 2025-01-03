@@ -1,19 +1,20 @@
-package ru.practicum.category.controller;
+package ru.practicum.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.category.dto.NewCategoryDto;
-import ru.practicum.category.dto.UpdateCategoryDto;
-import ru.practicum.category.dto.mapper.CategoryMapper;
-import ru.practicum.category.model.Category;
-import ru.practicum.category.service.CategoryService;
+import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.category.NewCategoryDto;
+import ru.practicum.dto.category.UpdateCategoryDto;
+import ru.practicum.mapper.CategoryMapper;
+import ru.practicum.model.Category;
+import ru.practicum.service.CategoryService;
+
 
 @RestController
-@RequestMapping("/admin/categories")
+@RequestMapping("/api/v1/admin/categories")
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryAdminController {

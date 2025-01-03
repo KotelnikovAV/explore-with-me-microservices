@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>stat-client</module>
-        <module>interaction-api</module>
+        <module>interaction-api-stats</module>
         <module>stats-server</module>
     </modules>
 

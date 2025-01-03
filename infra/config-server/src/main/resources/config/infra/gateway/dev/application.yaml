@@ -21,11 +21,26 @@ spring:
           filters:
             - PrefixPath=/api/v1
             - CircuitBreaker=StatClient
+        - id: category_circuitbreaker_route
+          uri: lb://category
+          predicates:
+            - Path=/**
+          filters:
+            - PrefixPath=/api/v1
+            - CircuitBreaker=CategoryClient
 
 resilience4j:
   circuitbreaker:
     instances:
       StatClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      CategoryClient:
         slidingWindowSize: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
