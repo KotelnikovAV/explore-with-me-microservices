@@ -6,11 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.client.event.EventClient;
 import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.model.Category;
-import ru.practicum.repository.CategoryRepository;
+import ru.practicum.model.category.Category;
+import ru.practicum.repository.category.CategoryRepository;
+import ru.practicum.repository.event.EventRepository;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
 @Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
-    private final EventClient evenClient;
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
@@ -41,7 +41,7 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.findById(catId).orElseThrow(
                 () -> new NotFoundException("Category " + catId + " does not exist"));
 
-        if (evenClient.getExistEventByCategory(catId)) {
+        if (!eventRepository.findAllByCategoryId(catId).isEmpty()) {
             throw new IntegrityViolationException("Category " + catId + " already exists");
         }
 

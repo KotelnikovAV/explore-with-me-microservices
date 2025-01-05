@@ -5,7 +5,7 @@ import org.mapstruct.MappingConstants;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.NewCategoryDto;
 import ru.practicum.dto.category.UpdateCategoryDto;
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 
 import java.util.List;
 

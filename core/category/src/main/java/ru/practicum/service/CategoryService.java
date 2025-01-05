@@ -1,7 +1,6 @@
 package ru.practicum.service;
 
-
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 
 import java.util.List;
 

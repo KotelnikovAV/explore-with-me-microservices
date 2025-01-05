@@ -9,7 +9,7 @@ import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.category.NewCategoryDto;
 import ru.practicum.dto.category.UpdateCategoryDto;
 import ru.practicum.mapper.CategoryMapper;
-import ru.practicum.model.Category;
+import ru.practicum.model.category.Category;
 import ru.practicum.service.CategoryService;
 
 
