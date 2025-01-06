@@ -26,14 +26,14 @@ import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.LocationMapper;
 import ru.practicum.mapper.RequestMapper;
-import ru.practicum.model.Category;
-import ru.practicum.model.Event;
-import ru.practicum.model.User;
+import ru.practicum.model.category.Category;
+import ru.practicum.model.event.Event;
 import ru.practicum.model.request.Request;
-import ru.practicum.repository.CategoryRepositoryWithQuerydsl;
-import ru.practicum.repository.EventRepositoryWithQuerydsl;
-import ru.practicum.repository.UserRepositoryWithQuerydsl;
+import ru.practicum.model.user.User;
+import ru.practicum.repository.category.CategoryRepository;
+import ru.practicum.repository.event.EventRepository;
 import ru.practicum.repository.request.RequestsRepository;
+import ru.practicum.repository.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -43,7 +43,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.constants.Constants.FORMATTER;
-import static ru.practicum.model.QEvent.event;
+import static ru.practicum.model.event.QEvent.event;
 import static ru.practicum.utility.Constants.ACTUAL_VERSION_EVENT_SERVER;
 import static ru.practicum.utility.Constants.DEFAULT_SEARCH_START_DATE;
 
@@ -51,9 +51,9 @@ import static ru.practicum.utility.Constants.DEFAULT_SEARCH_START_DATE;
 @Slf4j
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
-    private final EventRepositoryWithQuerydsl eventRepository;
-    private final UserRepositoryWithQuerydsl userRepository;
-    private final CategoryRepositoryWithQuerydsl categoryRepository;
+    private final EventRepository eventRepository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final RequestsRepository requestsRepository;
     private final StatClient statClient;
     private final EventMapper eventMapper;

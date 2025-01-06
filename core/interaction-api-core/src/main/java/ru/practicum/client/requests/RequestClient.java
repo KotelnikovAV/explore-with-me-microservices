@@ -9,7 +9,7 @@ import ru.practicum.fallback.requests.RequestFallback;
 import java.util.List;
 
 
-@FeignClient(name = "requests", fallback = RequestFallback.class)
+@FeignClient(name = "request", fallback = RequestFallback.class)
 public interface RequestClient {
     @GetMapping("/api/v1/users/{userId}/requests")
     List<ParticipationRequestDto> getAllRequests(@PathVariable Long userId);

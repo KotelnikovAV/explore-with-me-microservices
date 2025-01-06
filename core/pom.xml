@@ -12,7 +12,6 @@
     <artifactId>core</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>main-service</module>
         <module>interaction-api-core</module>
         <module>category</module>
         <module>compilation</module>

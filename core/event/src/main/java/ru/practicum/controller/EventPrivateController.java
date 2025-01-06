@@ -54,6 +54,7 @@ public class EventPrivateController {
         return event;
     }
 
+
     @GetMapping
     public List<EventShortDto> findEventsByUser(@PathVariable long userId,
                                                 @RequestParam(defaultValue = "0") int from,

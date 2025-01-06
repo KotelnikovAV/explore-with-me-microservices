@@ -7,32 +7,57 @@ spring:
         enabled: true
     gateway:
       discovery.locator.enabled: true
+      httpclient:
+        connect-timeout: 3000
+        response-timeout: 10s
       routes:
-        - id: main_service_route
-          uri: lb://main-service
+        - id: compilation_circuitbreaker_route
+          uri: lb://compilation
           predicates:
-            - Path=/**
+            - Path=/admin/compilations/**, /compilations/**
           filters:
             - PrefixPath=/api/v1
-        - id: stat_server_circuitbreaker_route
-          uri: lb://stat_server
-          predicates:
-            - Path=/**
-          filters:
-            - PrefixPath=/api/v1
-            - CircuitBreaker=StatClient
+            - CircuitBreaker=CompilationClient
         - id: category_circuitbreaker_route
           uri: lb://category
           predicates:
-            - Path=/**
+            - Path=/admin/categories/**, /categories/**
           filters:
             - PrefixPath=/api/v1
             - CircuitBreaker=CategoryClient
+        - id: event_circuitbreaker_route
+          uri: lb://event
+          predicates:
+            - Path=/admin/events/**, /events/**, /users/{segment}/events/**
+          filters:
+            - PrefixPath=/api/v1
+            - CircuitBreaker=EventClient
+        - id: like_circuitbreaker_route
+          uri: lb://like
+          predicates:
+            - Path=/event/{segment}/like/**
+          filters:
+            - PrefixPath=/api/v1
+            - CircuitBreaker=LikeClient
+        - id: request_circuitbreaker_route
+          uri: lb://request
+          predicates:
+            - Path=/users/{segment}/requests/**
+          filters:
+            - PrefixPath=/api/v1
+            - CircuitBreaker=RequestClient
+        - id: user_circuitbreaker_route
+          uri: lb://user
+          predicates:
+            - Path=/admin/users/**
+          filters:
+            - PrefixPath=/api/v1
+            - CircuitBreaker=UserClient
 
 resilience4j:
   circuitbreaker:
     instances:
-      StatClient:
+      CategoryClient:
         slidingWindowSize: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
@@ -40,7 +65,39 @@ resilience4j:
         slidingWindowType: COUNT_BASED
         minimumNumberOfCalls: 5
         automaticTransitionFromOpenToHalfOpenEnabled: true
-      CategoryClient:
+      CompilationClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      EventClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 2000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      LikeClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      RequestClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+      UserClient:
         slidingWindowSize: 10
         failureRateThreshold: 50
         waitDurationInOpenState: 10000

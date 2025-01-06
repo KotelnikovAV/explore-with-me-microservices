@@ -6,7 +6,7 @@ import org.mapstruct.MappingConstants;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
-import ru.practicum.model.Event;
+import ru.practicum.model.event.Event;
 
 import java.util.List;
 

@@ -201,7 +201,7 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
-      ewm-event-service:
+      ewm-request-service:
         condition: service_healthy
     networks:
       - ewm-net
@@ -225,7 +225,7 @@ services:
         condition: service_healthy
       config-server:
         condition: service_healthy
-      ewm-event-service:
+      ewm-compilation-service:
         condition: service_healthy
     networks:
       - ewm-net
