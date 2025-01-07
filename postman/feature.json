@@ -636,7 +636,7 @@
 							"pm.expect(target).to.have.property('requestModeration');\r",
 							"pm.expect(target).to.have.property('rating');\r",
 							"});\r",
-							"pm.test(\"Событие должно иметь рейтинг 0\", function(){\r",
+							"pm.test(\"Событие должно иметь рейтинг -1\", function(){\r",
 							"pm.expect(target).to.have.property('rating', -1);\r",
 							"});"
 						],

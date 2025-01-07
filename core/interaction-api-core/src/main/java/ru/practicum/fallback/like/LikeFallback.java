@@ -1,10 +1,12 @@
 package ru.practicum.fallback.like;
 
+import org.springframework.stereotype.Component;
 import ru.practicum.client.like.LikeClient;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.enums.StatusLike;
 import ru.practicum.exception.ServerUnavailableException;
 
+@Component
 public class LikeFallback implements LikeClient {
     @Override
     public EventFullDto addLike(long eventId, long userId, StatusLike reaction) {

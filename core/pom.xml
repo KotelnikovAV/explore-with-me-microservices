@@ -13,12 +13,10 @@
     <packaging>pom</packaging>
     <modules>
         <module>interaction-api-core</module>
-        <module>category</module>
-        <module>compilation</module>
-        <module>user</module>
-        <module>event</module>
-        <module>like</module>
-        <module>request</module>
+        <module>user-server</module>
+        <module>event-server</module>
+        <module>like-server</module>
+        <module>request-server</module>
     </modules>
 
     <properties>

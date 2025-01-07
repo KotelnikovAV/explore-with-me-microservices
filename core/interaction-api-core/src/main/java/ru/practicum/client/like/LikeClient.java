@@ -8,7 +8,7 @@ import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.enums.StatusLike;
 import ru.practicum.fallback.like.LikeFallback;
 
-@FeignClient(name = "like", fallback = LikeFallback.class)
+@FeignClient(name = "like-server", fallback = LikeFallback.class)
 public interface LikeClient {
     @PostMapping("/api/v1/event/{eventId}/like/{userId}")
     @ResponseStatus(HttpStatus.CREATED)

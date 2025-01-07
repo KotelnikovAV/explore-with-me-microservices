@@ -7,12 +7,12 @@ import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.fallback.requests.RequestFallback;
 
 import java.util.List;
+import java.util.Set;
 
-
-@FeignClient(name = "request", fallback = RequestFallback.class)
+@FeignClient(name = "request-server", fallback = RequestFallback.class)
 public interface RequestClient {
     @GetMapping("/api/v1/users/{userId}/requests")
-    List<ParticipationRequestDto> getAllRequests(@PathVariable Long userId);
+    List<ParticipationRequestDto> findAllRequestsByUserId(@PathVariable Long userId);
 
     @PostMapping("/api/v1/users/{userId}/requests")
     @ResponseStatus(HttpStatus.CREATED)
@@ -22,4 +22,23 @@ public interface RequestClient {
     @PatchMapping("/api/v1/users/{userId}/requests/{requestId}/cancel")
     ParticipationRequestDto cancelRequest(@PathVariable Long userId,
                                           @PathVariable Long requestId);
+
+    @GetMapping("/api/v1/users/requests/events/{eventId}")
+    List<ParticipationRequestDto> findAllRequestsByEventId(@PathVariable Long eventId);
+
+    @GetMapping("/api/v1/users/requests/events/{eventId}/status")
+    List<ParticipationRequestDto> findAllRequestsByEventIdAndStatus(@PathVariable Long eventId,
+                                                                    @RequestParam String status);
+
+    @GetMapping("/api/v1/users/requests")
+    List<ParticipationRequestDto> findAllRequestsByRequestsId(@RequestParam Set<Long> requestsId);
+
+    @PutMapping("/api/v1/users/requests/status")
+    List<ParticipationRequestDto> updateRequest(@RequestParam Set<Long> requestsId,
+                                                @RequestParam String status);
+
+    @GetMapping("api/v1/users/requests/existence")
+    boolean findExistRequests(@RequestParam Long eventId,
+                              @RequestParam Long userId,
+                              @RequestParam String status);
 }

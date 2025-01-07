@@ -11,43 +11,29 @@ spring:
         connect-timeout: 3000
         response-timeout: 10s
       routes:
-        - id: compilation_circuitbreaker_route
-          uri: lb://compilation
+        - id: event_server_circuitbreaker_route
+          uri: lb://event-server
           predicates:
-            - Path=/admin/compilations/**, /compilations/**
-          filters:
-            - PrefixPath=/api/v1
-            - CircuitBreaker=CompilationClient
-        - id: category_circuitbreaker_route
-          uri: lb://category
-          predicates:
-            - Path=/admin/categories/**, /categories/**
-          filters:
-            - PrefixPath=/api/v1
-            - CircuitBreaker=CategoryClient
-        - id: event_circuitbreaker_route
-          uri: lb://event
-          predicates:
-            - Path=/admin/events/**, /events/**, /users/{segment}/events/**
+            - Path=/admin/events/**, /events/**, /users/{segment}/events/**, /admin/compilations/**, /compilations/**, /admin/categories/**, /categories/**
           filters:
             - PrefixPath=/api/v1
             - CircuitBreaker=EventClient
         - id: like_circuitbreaker_route
-          uri: lb://like
+          uri: lb://like-server
           predicates:
             - Path=/event/{segment}/like/**
           filters:
             - PrefixPath=/api/v1
             - CircuitBreaker=LikeClient
         - id: request_circuitbreaker_route
-          uri: lb://request
+          uri: lb://request-server
           predicates:
             - Path=/users/{segment}/requests/**
           filters:
             - PrefixPath=/api/v1
             - CircuitBreaker=RequestClient
-        - id: user_circuitbreaker_route
-          uri: lb://user
+        - id: user_server_circuitbreaker_route
+          uri: lb://user-server
           predicates:
             - Path=/admin/users/**
           filters:
@@ -57,22 +43,6 @@ spring:
 resilience4j:
   circuitbreaker:
     instances:
-      CategoryClient:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10000
-        permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowType: COUNT_BASED
-        minimumNumberOfCalls: 5
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-      CompilationClient:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10000
-        permittedNumberOfCallsInHalfOpenState: 3
-        slidingWindowType: COUNT_BASED
-        minimumNumberOfCalls: 5
-        automaticTransitionFromOpenToHalfOpenEnabled: true
       EventClient:
         slidingWindowSize: 10
         failureRateThreshold: 50

@@ -2,6 +2,7 @@ package ru.practicum.EndpointHit.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +24,13 @@ public class EndpointHitController implements StatClient {
     private final EndpointHitMapper endpointHitMapper;
     private final ViewStatsMapper viewStatsMapper;
 
+    @SneakyThrows
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("hit")
     public void save(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         log.info("Received a POST request to save statistics {}", endpointHitDto);
         endpointHitService.save(endpointHitMapper.endpointHitDtoToEndpointHit(endpointHitDto));
+        Thread.sleep(400);
     }
 
     @GetMapping("stats")

@@ -14,7 +14,7 @@ import ru.practicum.fallback.user.UserFallback;
 import java.util.List;
 
 
-@FeignClient(name = "user", fallback = UserFallback.class)
+@FeignClient(name = "user-server", fallback = UserFallback.class)
 public interface UserClient {
     @GetMapping("/api/v1/admin/users")
     @Validated
@@ -33,4 +33,11 @@ public interface UserClient {
     @DeleteMapping("/api/v1/admin/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteUser(@PathVariable long userId);
+
+    @GetMapping("/api/v1/admin/users/{userId}/existence")
+    boolean getUserExists(@PathVariable long userId);
+
+    @PutMapping("/api/v1/admin/users/{userId}")
+    void updateRatingUser(@PathVariable long userId,
+                          @RequestParam int rating);
 }
