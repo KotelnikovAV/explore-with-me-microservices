@@ -30,7 +30,6 @@ public class RequestServiceImpl implements RequestService {
     private final EventClient eventClient;
 
     @Override
-    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findAllRequestsByUserId(long userId) {
         log.info("The beginning of the process of finding all requests");
 

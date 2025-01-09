@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.enums.StatusLike;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "likes")
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Like {
     @Id
@@ -37,4 +37,16 @@ public class Like {
     @NotNull
     @Column
     LocalDateTime created;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Like like = (Like) o;
+        return Objects.equals(id, like.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.enums.Status;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "requests")
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Request {
     @Id
@@ -37,4 +37,16 @@ public class Request {
     @Column
     @Enumerated(value = EnumType.STRING)
     Status status;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Request request = (Request) o;
+        return Objects.equals(id, request.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

@@ -20,13 +20,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
-    @Transactional(readOnly = true)
     public List<UserDto> getAllUsers(List<Long> ids, int from, int size) {
         log.info("The beginning of the process of finding all users");
         PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "id"));
@@ -43,7 +41,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<UserDto> getAllUsersBySortRating(int from, int size) {
         log.info("The beginning of the process of finding all users by sort rating");
         PageRequest pageRequest = PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "rating"));
@@ -53,6 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDto createUser(UserRequestDto requestDto) {
         log.info("The beginning of the process of creating a user");
         User user = userMapper.userRequestDtoToUser(requestDto);
@@ -66,6 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(long userId) {
         log.info("The beginning of the process of deleting a user");
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
@@ -81,6 +80,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void updateRatingUser(long userId, int rating) {
         log.info("The beginning of the process of updating a user");
 

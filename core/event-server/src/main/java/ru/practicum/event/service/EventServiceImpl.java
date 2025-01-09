@@ -103,7 +103,6 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public EventFullDto findEventByUserIdAndEventId(long userId, long eventId) {
         log.info("The beginning of the process of finding a event");
@@ -129,7 +128,6 @@ public class EventServiceImpl implements EventService {
         return eventFullDto;
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> findEventsByUser(long userId, int from, int size) {
         log.info("The beginning of the process of finding a events");
@@ -213,7 +211,6 @@ public class EventServiceImpl implements EventService {
         return eventMapper.eventToEventFullDto(event);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> findRequestByEventId(long userId, long eventId) {
         log.info("The beginning of the process of finding a requests");
@@ -269,14 +266,12 @@ public class EventServiceImpl implements EventService {
             event.setConfirmedRequests(event.getConfirmedRequests() + updateRequests.getRequestIds().size());
         }
 
-        eventRepository.saveAndFlush(event);
-
         log.info("The requests was updated");
         return createEventRequestStatusUpdateResult(requests);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public List<EventShortDto> findAllPublicEvents(String text, List<Long> categories, Boolean paid,
                                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                    boolean onlyAvailable, EventPublicSort sort, int from, int size) {
@@ -323,7 +318,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public EventFullDto findPublicEventById(long id) {
         log.info("The beginning of the process of finding a event by public");
 
@@ -335,7 +330,7 @@ public class EventServiceImpl implements EventService {
         return eventMapper.eventToEventFullDto(event);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<EventFullDto> findAllAdminEvents(List<Long> users, State state, List<Long> categories,
                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, int from,

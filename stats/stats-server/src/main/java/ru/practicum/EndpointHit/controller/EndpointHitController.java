@@ -30,7 +30,7 @@ public class EndpointHitController implements StatClient {
     public void save(@Valid @RequestBody EndpointHitDto endpointHitDto) {
         log.info("Received a POST request to save statistics {}", endpointHitDto);
         endpointHitService.save(endpointHitMapper.endpointHitDtoToEndpointHit(endpointHitDto));
-        Thread.sleep(400);
+        Thread.sleep(300);
     }
 
     @GetMapping("stats")
