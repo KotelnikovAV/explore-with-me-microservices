@@ -1,11 +1,11 @@
-package ru.practicum.events.controller;
+package ru.practicum.actions.controller;
 
 import com.google.protobuf.Empty;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.server.service.GrpcService;
-import ru.practicum.events.producer.EventsProducer;
+import ru.practicum.actions.producer.UserActionProducer;
 import ru.practicum.ewm.stats.proto.UserActionControllerGrpc;
 import ru.practicum.ewm.stats.proto.UserActionProto;
 
@@ -13,13 +13,13 @@ import ru.practicum.ewm.stats.proto.UserActionProto;
 @Slf4j
 @RequiredArgsConstructor
 public class CollectorController extends UserActionControllerGrpc.UserActionControllerImplBase {
-    private final EventsProducer eventsProducer;
+    private final UserActionProducer userActionProducer;
 
     @Override
     public void collectUserAction(UserActionProto userActionProto, StreamObserver<Empty> responseObserver) {
         log.info("Collect user action");
 
-        eventsProducer.collectUserAction(userActionProto);
+        userActionProducer.collectUserAction(userActionProto);
 
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();

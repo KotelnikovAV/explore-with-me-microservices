@@ -21,6 +21,7 @@
         <module>proto-schemas</module>
         <module>avro-schemas</module>
         <module>collector</module>
+        <module>aggregator</module>
     </modules>
 
     <properties>

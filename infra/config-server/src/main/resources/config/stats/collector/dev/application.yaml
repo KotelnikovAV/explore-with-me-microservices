@@ -7,10 +7,10 @@ collector:
     producer:
       properties:
         "bootstrap.servers": localhost:9092
-        "value.serializer": serializer.EventSerializer
+        "value.serializer": serializer.UserActionSerializer
         "key.serializer": org.apache.kafka.common.serialization.StringSerializer
         "batch.size": 2000
         "linger.ms": 4000
       topics:
         user_actions: stats.user-actions.v1
-      timeUntilClosingMs: 10000
+      timeUntilClosingKafkaProducerMs: 10000

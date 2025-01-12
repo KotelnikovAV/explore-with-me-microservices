@@ -1,8 +1,7 @@
-package ru.practicum.events.producer;
-
+package ru.practicum.actions.producer;
 
 import ru.practicum.ewm.stats.proto.UserActionProto;
 
-public interface EventsProducer {
+public interface UserActionProducer {
     void collectUserAction(UserActionProto userActionProto);
 }

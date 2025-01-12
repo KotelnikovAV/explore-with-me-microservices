@@ -1,0 +1,23 @@
+aggregator:
+  kafka:
+    producer:
+      properties:
+        "bootstrap.servers": localhost:9092
+        "value.serializer": serializer.UserActionSerializer
+        "key.serializer": org.apache.kafka.common.serialization.StringSerializer
+        "batch.size": 2000
+        "linger.ms": 4000
+      topics:
+        events-similarity: stats.events-similarity.v1
+      timeUntilClosingKafkaProducerMs: 10000
+    consumer:
+      properties:
+        "bootstrap.servers": localhost:9092
+        "client.id": Consumer-1
+        "group.id": some.group.id
+        "value.deserializer": deserializer.UserActionsAvroDeserializer
+        "max.poll.records": 50
+        "enable.auto.commit": false
+      topics:
+        user_actions: stats.user-actions.v1
+      consumeAttemptTimeout: 10000

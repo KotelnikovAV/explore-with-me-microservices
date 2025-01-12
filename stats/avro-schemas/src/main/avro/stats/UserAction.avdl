@@ -13,4 +13,11 @@ protocol HubEventProtocol {
 		ActionTypeAvro actionType;
 		timestamp_ms timestamp;
 	}
+
+	record EventSimilarityAvro {
+		long eventA;
+		long eventB;
+		double score;
+		timestamp_ms timestamp;
+	}
 }

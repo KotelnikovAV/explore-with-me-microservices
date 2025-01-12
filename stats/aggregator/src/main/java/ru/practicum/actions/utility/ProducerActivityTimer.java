@@ -1,4 +1,4 @@
-package ru.practicum.events.utility;
+package ru.practicum.actions.utility;
 
 import lombok.experimental.UtilityClass;
 import org.apache.avro.specific.SpecificRecordBase;
