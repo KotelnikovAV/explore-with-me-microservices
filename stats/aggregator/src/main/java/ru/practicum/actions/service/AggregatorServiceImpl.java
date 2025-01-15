@@ -144,13 +144,12 @@ public class AggregatorServiceImpl implements AggregatorService {
     }
 
     private Double calculateSimilarity(long eventId, long firstEventId, long secondEventId, double deltaOldNewWeight) {
-        double sumWeight = sumWeightsEvents.getOrDefault(eventId, 0.0)+ deltaOldNewWeight;
+        double newSumWeights = sumWeightsEvents.getOrDefault(eventId, 0.0)+ deltaOldNewWeight;
         double sumMin = sumMinimumWeightsEvents
                 .computeIfAbsent(firstEventId, e -> new HashMap<>()).getOrDefault(secondEventId, 0.0);
-        double summarily = sumMin /
-                (Math.sqrt(sumWeight) + Math.sqrt(sumWeightsEvents.get(secondEventId)));
-        sumWeightsEvents.replace(eventId, sumWeight);
-        return summarily;
+        sumWeightsEvents.replace(eventId, newSumWeights);
+
+        return sumMin / (Math.sqrt(newSumWeights) + Math.sqrt(sumWeightsEvents.get(secondEventId)));
     }
 
     private void calculateSumMin(long firstEventId, long secondEventId) {

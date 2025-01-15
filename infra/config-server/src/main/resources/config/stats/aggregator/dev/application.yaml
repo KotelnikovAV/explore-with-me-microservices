@@ -13,10 +13,10 @@ aggregator:
     consumer:
       properties:
         "bootstrap.servers": localhost:9092
-        "client.id": Consumer-1
-        "group.id": some.group.id
+        "client.id": Consumer-3
+        "group.id": some.group.3
         "value.deserializer": deserializer.UserActionsAvroDeserializer
-        "max.poll.records": 50
+        "max.poll.records": 20
         "enable.auto.commit": false
       topics:
         user_actions: stats.user-actions.v1
