@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "users")
+@Table(name = "user-action")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,4 +31,8 @@ public class UserAction {
     @Column
     @Enumerated(value = EnumType.STRING)
     ActionType actionType;
+
+    @NotNull
+    @Column
+    LocalDateTime actionDate;
 }

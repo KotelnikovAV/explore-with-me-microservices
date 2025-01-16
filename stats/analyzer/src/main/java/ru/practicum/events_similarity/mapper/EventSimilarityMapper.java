@@ -4,12 +4,22 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import ru.practicum.events_similarity.model.EventSimilarity;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
+import ru.practicum.ewm.stats.proto.RecommendedEventProto;
 
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface EventSimilarityMapper {
-    EventSimilarity eventSimilarityAvroToEventSimilarity(EventSimilarityAvro eventSimilarityAvro);
+public abstract class EventSimilarityMapper {
+    public abstract EventSimilarity eventSimilarityAvroToEventSimilarity(EventSimilarityAvro eventSimilarityAvro);
 
-    List<EventSimilarity> listEventSimilarityAvroToListEventSimilarity(List<EventSimilarityAvro> eventsSimilarityAvro);
+    public abstract List<EventSimilarity> listEventSimilarityAvroToListEventSimilarity(List<EventSimilarityAvro> eventsSimilarityAvro);
+
+    public RecommendedEventProto eventSimilarityToRecommendedEventProto(EventSimilarity eventSimilarity) {
+        return RecommendedEventProto.newBuilder()
+                .setEventId(eventSimilarity.getEventB())
+                .setScore(eventSimilarity.getScore())
+                .build();
+    }
+
+    public abstract List<RecommendedEventProto> listEventSimilarityToListRecommendedEventProto(List<EventSimilarity> eventSimilarities);
 }
