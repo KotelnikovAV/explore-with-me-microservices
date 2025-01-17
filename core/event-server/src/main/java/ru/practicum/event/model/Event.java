@@ -83,10 +83,10 @@ public class Event {
 
     @NotNull
     @Column
-    Long rating;
+    Long likes;
 
     @Transient
-    Long views;
+    Double rating;
 
     @Override
     public boolean equals(Object o) {

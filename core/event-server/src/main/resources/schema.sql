@@ -30,7 +30,7 @@ create table if not exists events
     state              varchar      NOT NULL,
     title              varchar      NOT NULL,
     confirmed_requests INTEGER      NOT NULL,
-    rating             INTEGER      NOT NULL
+    likes              INTEGER      NOT NULL
 );
 
 create table if not exists compilations

@@ -27,20 +27,20 @@ public class EventAdminController implements EventClient {
     @GetMapping
     @Override
     public List<EventFullDto> findAllAdminEvents(@RequestParam(required = false) List<Long> users,
-                                                @RequestParam(required = false) State state,
-                                                @RequestParam(required = false) List<Long> categories,
-                                                @RequestParam(required = false)
-                                                @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
-                                                LocalDateTime rangeStart,
-                                                @RequestParam(required = false)
-                                                @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
-                                                LocalDateTime rangeEnd,
-                                                @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                @RequestParam(defaultValue = "10") @Positive int size,
-                                                @RequestParam(defaultValue = "true") Boolean sortRating) {
+                                                 @RequestParam(required = false) State states,
+                                                 @RequestParam(required = false) List<Long> categories,
+                                                 @RequestParam(required = false)
+                                                 @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
+                                                 LocalDateTime rangeStart,
+                                                 @RequestParam(required = false)
+                                                 @DateTimeFormat(pattern = Constants.DATE_TIME_FORMAT)
+                                                 LocalDateTime rangeEnd,
+                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                 @RequestParam(defaultValue = "10") @Positive int size,
+                                                 @RequestParam(defaultValue = "true") Boolean sortRating) {
         log.info("Get all admin events by users {}, state {}, categories {}, rangeStart {}, rangeEnd {}, from {}, " +
-                "size {}, sortRating {}", users, state, categories, rangeStart, rangeEnd, from, size, sortRating);
-        return eventService.findAllAdminEvents(users, state, categories, rangeStart, rangeEnd, from, size, sortRating);
+                "size {}, sortRating {}", users, states, categories, rangeStart, rangeEnd, from, size, sortRating);
+        return eventService.findAllAdminEvents(users, states, categories, rangeStart, rangeEnd, from, size, sortRating);
     }
 
     @PatchMapping("/{eventId}")

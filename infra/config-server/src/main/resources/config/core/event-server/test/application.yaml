@@ -25,3 +25,28 @@ logging:
     "org.springframework.transaction": INFO
     "org.springframework.transaction.interceptor": TRACE
     "org.springframework.orm.jpa.JpaTransactionManager": DEBUG
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      StatClient:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+grpc:
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+    collector:
+      address: 'discovery:///collector'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext

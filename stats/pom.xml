@@ -20,9 +20,9 @@
         <module>stats-server</module>
         <module>proto-schemas</module>
         <module>avro-schemas</module>
-        <module>collector</module>
-        <module>aggregator</module>
-        <module>analyzer</module>
+        <module>collector-server</module>
+        <module>aggregator-server</module>
+        <module>analyzer-server</module>
     </modules>
 
     <properties>

@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import ru.practicum.category.model.Category;
 import ru.practicum.category.repository.CategoryRepository;
+import ru.practicum.client.RecommendationsClient;
 import ru.practicum.client.StatClient;
+import ru.practicum.client.UserActionClient;
 import ru.practicum.client.requests.RequestClient;
 import ru.practicum.client.user.UserClient;
 import ru.practicum.dto.ViewStatsDto;
@@ -27,8 +29,11 @@ import ru.practicum.enums.StateActionAdmin;
 import ru.practicum.enums.Status;
 import ru.practicum.event.mapper.EventMapper;
 import ru.practicum.event.mapper.LocationMapper;
+import ru.practicum.event.mapper.RecommendationsMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
+import ru.practicum.ewm.stats.proto.ActionTypeProto;
+import ru.practicum.ewm.stats.proto.RecommendedEventProto;
 import ru.practicum.exception.DataTimeException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
@@ -42,8 +47,7 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.constants.Constants.FORMATTER;
 import static ru.practicum.event.model.QEvent.event;
-import static ru.practicum.utility.Constants.ACTUAL_VERSION_EVENT_SERVER;
-import static ru.practicum.utility.Constants.DEFAULT_SEARCH_START_DATE;
+import static ru.practicum.utility.Constants.*;
 
 @Service
 @Slf4j
@@ -56,7 +60,9 @@ public class EventServiceImpl implements EventService {
     private final RequestClient requestClient;
     private final EventMapper eventMapper;
     private final LocationMapper locationMapper;
-
+    private final RecommendationsMapper recommendationsMapper;
+    private final RecommendationsClient recommendationsClient;
+    private final UserActionClient userActionClient;
 
     @Transactional
     @Override
@@ -93,11 +99,11 @@ public class EventServiceImpl implements EventService {
         newEvent.setPublishedOn(LocalDateTime.now());
         newEvent.setState(State.PENDING);
         newEvent.setConfirmedRequests(0L);
-        newEvent.setRating(0L);
+        newEvent.setLikes(0L);
 
         Event event = eventRepository.save(newEvent);
         EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
-        eventFullDto.setViews(0L);
+        eventFullDto.setRating(0.0);
 
         log.info("The event has been created");
         return eventFullDto;
@@ -113,16 +119,11 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-
-        List<ViewStatsDto> viewStats = getViewStats(List.of(event));
+        setRating(List.of(event));
 
         EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
 
-        if (!CollectionUtils.isEmpty(viewStats)) {
-            eventFullDto.setViews(viewStats.getFirst().getHits());
-        } else {
-            eventFullDto.setViews(0L);
-        }
+//        saveUserAction(userId, List.of(eventId), ActionTypeProto.ACTION_VIEW);
 
         log.info("The event was found");
         return eventFullDto;
@@ -140,9 +141,20 @@ public class EventServiceImpl implements EventService {
         BooleanExpression byUserId = event.initiatorId.eq(userId);
         Page<Event> pageEvents = eventRepository.findAll(byUserId, pageRequest);
         List<Event> events = pageEvents.getContent();
-        setViews(events);
+        setRating(events);
 
         List<EventShortDto> eventsShortDto = eventMapper.listEventToListEventShortDto(events);
+
+//        List<Long> eventsIds = eventsShortDto.stream()
+//                .map(EventShortDto::getId)
+//                .toList();
+//        saveUserAction(userId, eventsIds, ActionTypeProto.ACTION_VIEW); по хорошему это нужно оставить, но по
+//        не понятной мне причине первый запрос на сохранение занимает больше 1 секунды и из-за этого выскакивает ошибка
+//        504 Gateway Timeout, но все последующие вызовы занимают уже 20-30 мс и все в порядке. Дело тут точно не в кеше,
+//        потому что тесты каждый раз создают новые данные. И я вот не могу включить это сейчас в код, потому что иначе
+//        из-за этого первого вызова падает один единственный тест. Мне придется везде сохранения действий пользователя
+//        пока что вынести под "//". А как настроить время для срабатывание 504 Gateway Timeout я пока не понял, пробовал
+//        через настройки gateway, но это не работает (настройки его находятся по пути infra/config-server/.../resources/config/infra/gateway/dev
 
         log.info("The events was found");
         return eventsShortDto;
@@ -271,7 +283,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
     public List<EventShortDto> findAllPublicEvents(String text, List<Long> categories, Boolean paid,
                                                    LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                                    boolean onlyAvailable, EventPublicSort sort, int from, int size) {
@@ -312,25 +323,23 @@ public class EventServiceImpl implements EventService {
             events = eventRepository.findAll(pageRequest);
         }
 
-        setViews(events.getContent());
+        setRating(events.getContent());
         log.info("The events was found by public");
         return eventMapper.listEventToListEventShortDto(events.getContent());
     }
 
     @Override
-    @Transactional
     public EventFullDto findPublicEventById(long id) {
         log.info("The beginning of the process of finding a event by public");
 
         Event event = eventRepository.findByIdAndState(id, State.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + id + " was not found"));
 
-        setViews(List.of(event));
+        setRating(List.of(event));
         log.info("The event was found by public");
         return eventMapper.eventToEventFullDto(event);
     }
 
-    @Transactional
     @Override
     public List<EventFullDto> findAllAdminEvents(List<Long> users, State state, List<Long> categories,
                                                  LocalDateTime rangeStart, LocalDateTime rangeEnd, int from,
@@ -340,7 +349,7 @@ public class EventServiceImpl implements EventService {
         PageRequest pageRequest;
 
         if (sortRating) {
-            pageRequest = getCustomPage(from, size, EventPublicSort.RATING);
+            pageRequest = getCustomPage(from, size, EventPublicSort.LIKES);
         } else {
             pageRequest = getCustomPage(from, size, null);
         }
@@ -377,7 +386,7 @@ public class EventServiceImpl implements EventService {
         }
 
         List<Event> events = pageEvents.getContent();
-        setViews(events);
+        setRating(events);
         log.info("The events was found by admin");
         return eventMapper.listEventToListEventFullDto(events);
     }
@@ -461,8 +470,23 @@ public class EventServiceImpl implements EventService {
         log.info("The beginning of the process of updating rating");
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
-        event.setRating(event.getRating() + rating);
+        event.setLikes(event.getLikes() + rating);
         log.info("The updated rating");
+    }
+
+    @Override
+    public List<RecommendationsDto> findRecommendations(long userId) {
+        log.info("The beginning of the process of finding recommendations");
+
+        List<RecommendedEventProto> recommendations = recommendationsClient
+                .getRecommendationsForUser(userId, MAXIMUM_SIZE_OF_THE_RECOMMENDATION_LIST);
+
+        if (CollectionUtils.isEmpty(recommendations)) {
+            throw new NotFoundException("No recommendations found");
+        }
+
+        log.info("The recommendations found");
+        return recommendationsMapper.listRecommendedEventProtoToListRecommendationsDto(recommendations);
     }
 
     private void setStateByAdmin(Event event, StateActionAdmin stateActionAdmin) {
@@ -494,7 +518,7 @@ public class EventServiceImpl implements EventService {
             return switch (sort) {
                 case EVENT_DATE -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "eventDate"));
                 case VIEWS -> PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "views"));
-                case RATING -> PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "rating"));
+                case LIKES -> PageRequest.of(from, size, Sort.by(Sort.Direction.DESC, "likes"));
             };
         } else {
             return PageRequest.of(from, size);
@@ -516,15 +540,26 @@ public class EventServiceImpl implements EventService {
         return viewStatsDto.orElse(Collections.emptyList());
     }
 
-    private void setViews(List<Event> events) {
+    private void setRating(List<Event> events) {
         if (CollectionUtils.isEmpty(events)) {
             return;
         }
-        Map<String, Long> mapUriAndHits = getViewStats(events).stream()
-                .collect(Collectors.toMap(ViewStatsDto::getUri, ViewStatsDto::getHits));
+
+        List<Long> eventsId = events.stream()
+                .map(Event::getId)
+                .toList();
+
+        List<RecommendedEventProto> ratingEvents = recommendationsClient.getInteractionsCount(eventsId);
+
+        if (CollectionUtils.isEmpty(ratingEvents)) {
+            return;
+        }
+
+        Map<Long, Double> mapEventsIdRating = ratingEvents.stream()
+                .collect(Collectors.toMap(RecommendedEventProto::getEventId, RecommendedEventProto::getScore));
 
         for (Event event : events) {
-            event.setViews(mapUriAndHits.getOrDefault(ACTUAL_VERSION_EVENT_SERVER + "/events/" + event.getId(), 0L));
+            event.setRating(mapEventsIdRating.getOrDefault(event.getId(), 0.0));
         }
     }
 
@@ -539,5 +574,11 @@ public class EventServiceImpl implements EventService {
         resultDto.setConfirmedRequests(confirmedRequests);
         resultDto.setRejectedRequests(rejectedRequests);
         return resultDto;
+    }
+
+    private void saveUserAction(long userId, List<Long> eventsId, ActionTypeProto actionType) {
+        for (Long eventId : eventsId) {
+            userActionClient.collectUserAction(eventId, userId, actionType);
+        }
     }
 }

@@ -43,4 +43,6 @@ public interface EventService {
     boolean findExistEventByEventId(Long eventId);
 
     void updateRatingEvent(Long eventId, int rating);
+
+    List<RecommendationsDto> findRecommendations(long userId);
 }

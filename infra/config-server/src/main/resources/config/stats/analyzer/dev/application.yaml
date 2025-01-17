@@ -15,7 +15,7 @@ spring:
       mode: always
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/ewm-stats
+    url: jdbc:postgresql://localhost:5432/analyzer-server
     username: root
     password: root
 
@@ -31,7 +31,7 @@ analyzer:
     consumer:
       events-similarity:
         properties:
-          "bootstrap.servers": localhost:9092
+          "bootstrap.servers": kafka:29092
           "client.id": Consumer-1
           "group.id": some.group.1
           "value.deserializer": deserializer.EventSimilarityAvroDeserializer
@@ -39,10 +39,10 @@ analyzer:
           "enable.auto.commit": false
         topics:
           events_similarity: stats.events-similarity.v1
-        consumeAttemptTimeout: 10000
+        consumeAttemptTimeout: 5000
       user-actions:
         properties:
-          "bootstrap.servers": localhost:9092
+          "bootstrap.servers": kafka:29092
           "client.id": Consumer-2
           "group.id": some.group.2
           "value.deserializer": deserializer.UserActionsAvroDeserializer
@@ -50,4 +50,4 @@ analyzer:
           "enable.auto.commit": false
         topics:
           user_actions: stats.user-actions.v1
-        consumeAttemptTimeout: 10000
+        consumeAttemptTimeout: 5000

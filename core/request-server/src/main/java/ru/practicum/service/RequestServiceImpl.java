@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.UserActionClient;
 import ru.practicum.client.event.EventClient;
 import ru.practicum.client.user.UserClient;
 import ru.practicum.dto.event.EventFullDto;
@@ -28,6 +29,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestMapper requestMapper;
     private final UserClient userClient;
     private final EventClient eventClient;
+    private final UserActionClient userActionClient;
 
     @Override
     public List<ParticipationRequestDto> findAllRequestsByUserId(long userId) {
@@ -86,6 +88,9 @@ public class RequestServiceImpl implements RequestService {
         }
 
         request = requestsRepository.save(request);
+
+//        userActionClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
+
         log.info("The request has been created");
         return requestMapper.requestToParticipationRequestDto(request);
     }
