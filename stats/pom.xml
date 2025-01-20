@@ -11,13 +11,18 @@
 
     <artifactId>stats</artifactId>
 
-    <name>Stat service</name>
+    <name>stats</name>
 
     <packaging>pom</packaging>
     <modules>
         <module>stat-client</module>
         <module>interaction-api-stats</module>
         <module>stats-server</module>
+        <module>proto-schemas</module>
+        <module>avro-schemas</module>
+        <module>collector-server</module>
+        <module>aggregator-server</module>
+        <module>analyzer-server</module>
     </modules>
 
     <properties>

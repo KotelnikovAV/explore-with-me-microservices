@@ -8,9 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.client.StatClient;
-import ru.practicum.config.AppConfig;
-import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.enums.EventPublicSort;
@@ -27,8 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventPublicController {
     private final EventService eventService;
-    private final StatClient statClient;
-    private final AppConfig appConfig;
 
     @GetMapping
     public List<EventShortDto> findAllPublicEvents(@RequestParam(required = false) String text,
@@ -46,27 +41,13 @@ public class EventPublicController {
                                                   @RequestParam(defaultValue = "10") @Positive Integer size,
                                                   HttpServletRequest request) {
         log.info("Get all public events by text {}", text);
-        List<EventShortDto> allPublicEvents = eventService.findAllPublicEvents(text, categories, paid,
+        return eventService.findAllPublicEvents(text, categories, paid,
                 rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        EndpointHitDto endpointHitDto = new EndpointHitDto(
-                appConfig.getAppName(),
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now());
-        statClient.save(endpointHitDto);
-        return allPublicEvents;
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto findPublicEventById(@PathVariable Long eventId, HttpServletRequest request) {
         log.info("Get public event by id {}", eventId);
-        EventFullDto publicEventById = eventService.findPublicEventById(eventId);
-        EndpointHitDto endpointHitDto = new EndpointHitDto(
-                appConfig.getAppName(),
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now());
-        statClient.save(endpointHitDto);
-        return publicEventById;
+        return eventService.findPublicEventById(eventId);
     }
 }

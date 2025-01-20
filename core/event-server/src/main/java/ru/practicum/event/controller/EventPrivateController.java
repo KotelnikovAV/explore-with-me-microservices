@@ -6,19 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.client.StatClient;
-import ru.practicum.config.AppConfig;
-import ru.practicum.dto.EndpointHitDto;
-import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.EventShortDto;
-import ru.practicum.dto.event.NewEventDto;
-import ru.practicum.dto.event.UpdateEventUserRequest;
+import ru.practicum.dto.event.*;
 import ru.practicum.dto.requests.EventRequestStatusUpdateRequestDto;
 import ru.practicum.dto.requests.EventRequestStatusUpdateResultDto;
 import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.event.service.EventService;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -27,8 +20,6 @@ import java.util.List;
 @Slf4j
 public class EventPrivateController {
     private final EventService eventService;
-    private final StatClient statClient;
-    private final AppConfig appConfig;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -42,14 +33,7 @@ public class EventPrivateController {
                                       @PathVariable long eventId,
                                       HttpServletRequest request) throws InterruptedException {
         log.info("Received a GET request to find event by id {} from a user with an userId = {}", eventId, userId);
-        EventFullDto event = eventService.findEventByUserIdAndEventId(userId, eventId);
-        EndpointHitDto endpointHitDto = new EndpointHitDto(
-                appConfig.getAppName(),
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now());
-        statClient.save(endpointHitDto);
-        return event;
+        return eventService.findEventByUserIdAndEventId(userId, eventId);
     }
 
     @GetMapping
@@ -58,14 +42,7 @@ public class EventPrivateController {
                                                 @RequestParam(defaultValue = "10") int size,
                                                 HttpServletRequest request) {
         log.info("Received a GET request to find events by userId = {} from = {} size = {}", userId, from, size);
-        List<EventShortDto> events = eventService.findEventsByUser(userId, from, size);
-        EndpointHitDto endpointHitDto = new EndpointHitDto(
-                appConfig.getAppName(),
-                request.getRequestURI(),
-                request.getRemoteAddr(),
-                LocalDateTime.now());
-        statClient.save(endpointHitDto);
-        return events;
+        return eventService.findEventsByUser(userId, from, size);
     }
 
     @PatchMapping("/{eventId}")
@@ -93,5 +70,11 @@ public class EventPrivateController {
         log.info("Received a PATCH request to update request with an eventId = {} from a user with an userId = {}, " +
                 "request body {}", eventId, userId, updateRequests);
         return eventService.updateRequestByEventId(updateRequests, userId, eventId);
+    }
+
+    @GetMapping("/recommendations")
+    public List<RecommendationsDto> findRecommendations(@RequestHeader("X-EWM-USER-ID") long userId) {
+        log.info("Received a GET request to find recommendations");
+        return eventService.findRecommendations(userId);
     }
 }

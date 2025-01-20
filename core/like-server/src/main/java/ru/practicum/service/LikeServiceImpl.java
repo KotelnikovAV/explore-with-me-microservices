@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.client.UserActionClient;
 import ru.practicum.client.event.EventClient;
 import ru.practicum.client.requests.RequestClient;
 import ru.practicum.client.user.UserClient;
@@ -18,18 +19,17 @@ import ru.practicum.repository.LikeRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static ru.practicum.utility.Constants.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LikeServiceImpl implements LikeService {
-    private static final int DIFFERENCE_RATING_BY_ADD = 1;
-    private static final int DIFFERENCE_RATING_BY_DELETE = -1;
-    private static final int DIFFERENCE_RATING_BY_UPDATE = 2;
-
     private final LikeRepository likeRepository;
     private final UserClient userClient;
     private final EventClient eventClient;
     private final RequestClient requestClient;
+    private final UserActionClient userActionClient;
 
     @Override
     @Transactional
@@ -60,6 +60,8 @@ public class LikeServiceImpl implements LikeService {
         like.setStatus(statusLike);
         like.setCreated(LocalDateTime.now());
         likeRepository.save(like);
+
+//        userActionClient.collectUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE);
 
         return changeRatingUserAndEvent(event, statusLike, DIFFERENCE_RATING_BY_ADD);
     }
@@ -118,12 +120,12 @@ public class LikeServiceImpl implements LikeService {
         if (statusLike == StatusLike.LIKE) {
             userClient.updateRatingUser(event.getInitiator().getId(), difference);
             eventClient.updateRatingEvent(event.getId(), difference);
-            event.setRating(event.getRating() + difference);
+            event.setLikes(event.getLikes() + difference);
             return event;
         } else if (statusLike == StatusLike.DISLIKE) {
             userClient.updateRatingUser(event.getInitiator().getId(), difference * -1);
             eventClient.updateRatingEvent(event.getId(), difference * -1);
-            event.setRating(event.getRating() - difference);
+            event.setLikes(event.getLikes() - difference);
             return event;
         }
         return null;

@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "747d274d-e47f-4dbc-8917-0ef50f38ea0b",
-		"name": "Exprore With Me - Ratings",
+		"name": "Exprore With Me - Likes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "34636840"
 	},
@@ -272,7 +272,7 @@
 							"//const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
 							"\r",
-							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration, rating\", function () {\r",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration, likes\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
 							"pm.expect(target).to.have.property('title');\r",
 							"pm.expect(target).to.have.property('annotation');\r",
@@ -286,11 +286,11 @@
 							"pm.expect(target).to.have.property('createdOn');\r",
 							"pm.expect(target).to.have.property('location');\r",
 							"pm.expect(target).to.have.property('requestModeration');\r",
-							"pm.expect(target).to.have.property('rating');\r",
+							"pm.expect(target).to.have.property('likes');\r",
 							"});\r",
 							"\r",
 							"pm.test(\"Событие должно иметь рейтинг 1\", function () {\r",
-							"    pm.expect(target).to.have.property('rating', 1);\r",
+							"    pm.expect(target).to.have.property('likes', 1);\r",
 							"});"
 						],
 						"type": "text/javascript",
@@ -416,7 +416,7 @@
 							"\r",
 							"const target = pm.response.json()[0];\r",
 							"pm.test(\"Рейтинг первого события должен быть равен 2\", function () {\r",
-							"    pm.expect(target).to.have.property('rating', 2);\r",
+							"    pm.expect(target).to.have.property('likes', 2);\r",
 							"});\r",
 							"\r",
 							""
@@ -440,7 +440,7 @@
 					}
 				],
 				"url": {
-					"raw": "{{baseUrl}}/events?sort=RATING",
+					"raw": "{{baseUrl}}/events?sort=LIKES",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -450,7 +450,7 @@
 					"query": [
 						{
 							"key": "sort",
-							"value": "RATING"
+							"value": "LIKES"
 						}
 					]
 				},
@@ -620,7 +620,7 @@
 							"// const source = JSON.parse(pm.request.body.raw);\r",
 							"const target = pm.response.json();\r",
 							"\r",
-							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration, rating\", function () {\r",
+							"pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, description, participantLimit, state, createdOn, location, requestModeration, likes\", function () {\r",
 							"pm.expect(target).to.have.property('id');\r",
 							"pm.expect(target).to.have.property('title');\r",
 							"pm.expect(target).to.have.property('annotation');\r",
@@ -634,10 +634,10 @@
 							"pm.expect(target).to.have.property('createdOn');\r",
 							"pm.expect(target).to.have.property('location');\r",
 							"pm.expect(target).to.have.property('requestModeration');\r",
-							"pm.expect(target).to.have.property('rating');\r",
+							"pm.expect(target).to.have.property('likes');\r",
 							"});\r",
 							"pm.test(\"Событие должно иметь рейтинг -1\", function(){\r",
-							"pm.expect(target).to.have.property('rating', -1);\r",
+							"pm.expect(target).to.have.property('likes', -1);\r",
 							"});"
 						],
 						"type": "text/javascript",

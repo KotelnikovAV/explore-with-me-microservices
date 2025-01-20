@@ -25,3 +25,11 @@ logging:
     "org.springframework.transaction": INFO
     "org.springframework.transaction.interceptor": TRACE
     "org.springframework.orm.jpa.JpaTransactionManager": DEBUG
+
+grpc:
+  client:
+    collector:
+      address: 'discovery:///collector'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
