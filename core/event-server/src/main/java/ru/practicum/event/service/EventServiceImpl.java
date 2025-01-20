@@ -123,7 +123,7 @@ public class EventServiceImpl implements EventService {
 
         EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
 
-//        saveUserAction(userId, List.of(eventId), ActionTypeProto.ACTION_VIEW);
+        saveUserAction(userId, List.of(eventId), ActionTypeProto.ACTION_VIEW);
 
         log.info("The event was found");
         return eventFullDto;
@@ -145,16 +145,10 @@ public class EventServiceImpl implements EventService {
 
         List<EventShortDto> eventsShortDto = eventMapper.listEventToListEventShortDto(events);
 
-//        List<Long> eventsIds = eventsShortDto.stream()
-//                .map(EventShortDto::getId)
-//                .toList();
-//        saveUserAction(userId, eventsIds, ActionTypeProto.ACTION_VIEW); по хорошему это нужно оставить, но по
-//        не понятной мне причине первый запрос на сохранение занимает больше 1 секунды и из-за этого выскакивает ошибка
-//        504 Gateway Timeout, но все последующие вызовы занимают уже 20-30 мс и все в порядке. Дело тут точно не в кеше,
-//        потому что тесты каждый раз создают новые данные. И я вот не могу включить это сейчас в код, потому что иначе
-//        из-за этого первого вызова падает один единственный тест. Мне придется везде сохранения действий пользователя
-//        пока что вынести под "//". А как настроить время для срабатывание 504 Gateway Timeout я пока не понял, пробовал
-//        через настройки gateway, но это не работает (настройки его находятся по пути infra/config-server/.../resources/config/infra/gateway/dev
+        List<Long> eventsIds = eventsShortDto.stream()
+                .map(EventShortDto::getId)
+                .toList();
+        saveUserAction(userId, eventsIds, ActionTypeProto.ACTION_VIEW);
 
         log.info("The events was found");
         return eventsShortDto;

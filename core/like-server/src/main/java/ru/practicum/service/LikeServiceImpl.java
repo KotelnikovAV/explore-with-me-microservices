@@ -11,6 +11,7 @@ import ru.practicum.client.user.UserClient;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.enums.Status;
 import ru.practicum.enums.StatusLike;
+import ru.practicum.ewm.stats.proto.ActionTypeProto;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.RestrictionsViolationException;
 import ru.practicum.model.Like;
@@ -61,7 +62,7 @@ public class LikeServiceImpl implements LikeService {
         like.setCreated(LocalDateTime.now());
         likeRepository.save(like);
 
-//        userActionClient.collectUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE);
+        userActionClient.collectUserAction(eventId, userId, ActionTypeProto.ACTION_LIKE);
 
         return changeRatingUserAndEvent(event, statusLike, DIFFERENCE_RATING_BY_ADD);
     }

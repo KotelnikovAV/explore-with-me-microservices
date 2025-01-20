@@ -11,6 +11,7 @@ import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.requests.ParticipationRequestDto;
 import ru.practicum.enums.State;
 import ru.practicum.enums.Status;
+import ru.practicum.ewm.stats.proto.ActionTypeProto;
 import ru.practicum.exception.IntegrityViolationException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.RequestMapper;
@@ -89,7 +90,7 @@ public class RequestServiceImpl implements RequestService {
 
         request = requestsRepository.save(request);
 
-//        userActionClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
+        userActionClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER);
 
         log.info("The request has been created");
         return requestMapper.requestToParticipationRequestDto(request);
