@@ -1,7 +1,7 @@
 package ru.practicum.configuration;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -15,12 +15,12 @@ import java.util.Properties;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @ConfigurationProperties("analyzer.kafka.consumer.user-actions")
 public class ConsumerUserActionsConfig {
-    private Map<String, String> properties;
-    private Map<String, String> topics;
-    private long consumeAttemptTimeout;
+    private final Map<String, String> properties;
+    private final Map<String, String> topics;
+    private final long consumeAttemptTimeout;
 
     public Consumer<Void, UserActionAvro> getConsumer() {
        return new KafkaConsumer<>(getPropertiesForKafkaConsumer());

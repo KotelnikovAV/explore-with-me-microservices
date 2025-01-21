@@ -1,7 +1,7 @@
 package ru.practicum.configuration;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.avro.specific.SpecificRecordBase;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -13,12 +13,12 @@ import java.util.Properties;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 @ConfigurationProperties("aggregator.kafka.producer")
 public class ProducerConfig {
-    private Map<String, String> properties;
-    private Map<String, String> topics;
-    private long timeUntilClosingKafkaProducerMs;
+    private final Map<String, String> properties;
+    private final Map<String, String> topics;
+    private final long timeUntilClosingKafkaProducerMs;
 
     public Producer<String, SpecificRecordBase> getKafkaProducer() {
        return new KafkaProducer<>(getPropertiesForKafkaProducer());
