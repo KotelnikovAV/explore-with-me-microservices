@@ -229,7 +229,7 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Event with id=" + eventId + " was not found");
         }
 
-        List<ParticipationRequestDto> requests = requestClient.findAllRequestsByEventId(eventId);
+        List<ParticipationRequestDto> requests = requestClient.findAllRequestsByEventId(eventId, null);
 
         log.info("The requests was found");
         return requests;
@@ -250,7 +250,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Event with id=" + eventId + " was not found"));
 
         List<ParticipationRequestDto> confirmedRequests = requestClient
-                .findAllRequestsByEventIdAndStatus(eventId, Status.CONFIRMED.name());
+                .findAllRequestsByEventId(eventId, Status.CONFIRMED.name());
 
         if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
             throw new RestrictionsViolationException("The limit on applications for this event has been reached");

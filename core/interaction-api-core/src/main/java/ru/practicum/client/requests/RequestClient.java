@@ -24,11 +24,8 @@ public interface RequestClient {
                                           @PathVariable Long requestId);
 
     @GetMapping("/api/v1/users/requests/events/{eventId}")
-    List<ParticipationRequestDto> findAllRequestsByEventId(@PathVariable Long eventId);
-
-    @GetMapping("/api/v1/users/requests/events/{eventId}/status")
-    List<ParticipationRequestDto> findAllRequestsByEventIdAndStatus(@PathVariable Long eventId,
-                                                                    @RequestParam String status);
+    List<ParticipationRequestDto> findAllRequestsByEventId(@PathVariable Long eventId,
+                                                           @RequestParam String status);
 
     @GetMapping("/api/v1/users/requests")
     List<ParticipationRequestDto> findAllRequestsByRequestsId(@RequestParam Set<Long> requestsId);

@@ -77,7 +77,7 @@ public class EventAdminController implements EventClient {
     @PutMapping("/{eventId}")
     @Override
     public void updateRatingEvent(@PathVariable long eventId,
-                           @RequestParam int rating) {
+                                  @RequestParam int rating) {
         log.info("Update event rating {}", rating);
         eventService.updateRatingEvent(eventId, rating);
     }

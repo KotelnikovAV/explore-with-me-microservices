@@ -46,15 +46,8 @@ public class RequestPrivateController implements RequestClient {
 
     @GetMapping("/requests/events/{eventId}")
     @Override
-    public List<ParticipationRequestDto> findAllRequestsByEventId(@PathVariable Long eventId) {
-        log.info("findAllRequestsByEventId {}", eventId);
-        return requestService.findAllRequestsByEventId(eventId);
-    }
-
-    @GetMapping("/requests/events/{eventId}/status")
-    @Override
-    public List<ParticipationRequestDto> findAllRequestsByEventIdAndStatus(@PathVariable Long eventId,
-                                                                           @RequestParam String status) {
+    public List<ParticipationRequestDto> findAllRequestsByEventId(@PathVariable Long eventId,
+                                                                  @RequestParam(required = false) String status) {
         log.info("findAllRequestsByEventIdAndStatus {}, {}", eventId, status);
         return requestService.findAllRequestsByEventIdAndStatus(eventId, status);
     }

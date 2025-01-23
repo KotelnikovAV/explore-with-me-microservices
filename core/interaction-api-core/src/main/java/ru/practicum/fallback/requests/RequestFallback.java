@@ -27,12 +27,7 @@ public class RequestFallback implements RequestClient {
     }
 
     @Override
-    public List<ParticipationRequestDto> findAllRequestsByEventId(Long eventId) {
-        throw new ServerUnavailableException("Endpoint /api/v1/users/requests/events/{eventId} method GET is unavailable");
-    }
-
-    @Override
-    public List<ParticipationRequestDto> findAllRequestsByEventIdAndStatus(Long eventId, String status) {
+    public List<ParticipationRequestDto> findAllRequestsByEventId(Long eventId, String status) {
         throw new ServerUnavailableException("Endpoint /api/v1/users/requests/events/{eventId}/status method GET is unavailable");
     }
 

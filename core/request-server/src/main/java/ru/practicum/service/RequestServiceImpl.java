@@ -114,16 +114,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<ParticipationRequestDto> findAllRequestsByEventId(Long eventId) {
-        log.info("The beginning of the process of finding all requests by events");
-
-        List<Request> requests = requestsRepository.findByEventId(eventId);
-
-        log.info("The all requests has been found");
-        return requestMapper.listRequestToListParticipationRequestDto(requests);
-    }
-
-    @Override
     public List<ParticipationRequestDto> findAllRequestsByRequestsId(Set<Long> requestsId) {
         log.info("The beginning of the process of finding all requests by requestsId");
 
@@ -155,7 +145,13 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> findAllRequestsByEventIdAndStatus(Long eventId, String status) {
         log.info("The beginning of the process of finding all requests by eventId");
 
-        List<Request> requests = requestsRepository.findAllByStatusAndEventId(Status.valueOf(status), eventId);
+        List<Request> requests;
+
+        if (status == null || status.isBlank()) {
+            requests = requestsRepository.findByEventId(eventId);
+        } else {
+            requests = requestsRepository.findAllByStatusAndEventId(Status.valueOf(status), eventId);
+        }
 
         log.info("The all requests has been found");
         return requestMapper.listRequestToListParticipationRequestDto(requests);

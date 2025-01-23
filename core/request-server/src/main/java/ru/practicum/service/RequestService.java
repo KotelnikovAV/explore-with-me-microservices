@@ -13,8 +13,6 @@ public interface RequestService {
 
     ParticipationRequestDto cancelRequest(long userId, long requestId);
 
-    List<ParticipationRequestDto> findAllRequestsByEventId(Long eventId);
-
     List<ParticipationRequestDto> findAllRequestsByRequestsId(Set<Long> requestsId);
 
     List<ParticipationRequestDto> updateRequest(Set<Long> requestsId, String status);
