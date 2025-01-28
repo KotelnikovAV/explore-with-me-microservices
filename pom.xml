@@ -33,7 +33,7 @@
 		<commons-lang3.version>3.14.0</commons-lang3.version>
 		<jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
 		<avro.version>1.11.4</avro.version>
-		<kafka-clients.version>3.6.1</kafka-clients.version>
+		<kafka-clients.version>3.7.1</kafka-clients.version>
 		<grpc-spring-boot-starter.version>3.1.0.RELEASE</grpc-spring-boot-starter.version>
 		<grpc-client-spring-boot-starter>3.1.0.RELEASE</grpc-client-spring-boot-starter>
 		<protobuf.version>4.28.2</protobuf.version>
