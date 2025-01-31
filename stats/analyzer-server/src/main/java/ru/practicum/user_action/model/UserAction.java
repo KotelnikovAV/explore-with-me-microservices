@@ -16,17 +16,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserAction {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @NotNull
-    @Column
-    Long userId;
-
-    @NotNull
-    @Column
-    Long eventId;
+    @EmbeddedId
+    UserActionId userActionId;
 
     @NotNull
     @Column
@@ -39,13 +30,12 @@ public class UserAction {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        UserAction that = (UserAction) o;
-        return Objects.equals(id, that.id);
+        if (!(o instanceof UserAction that)) return false;
+        return Objects.equals(userActionId, that.userActionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(userActionId);
     }
 }

@@ -7,8 +7,6 @@ import net.devh.boot.grpc.server.service.GrpcService;
 import ru.practicum.events_similarity.service.EventSimilarityService;
 import ru.practicum.ewm.stats.proto.*;
 
-import java.util.List;
-
 @GrpcService
 @Slf4j
 @RequiredArgsConstructor
@@ -20,12 +18,8 @@ public class RecommendationsController extends RecommendationsControllerGrpc.Rec
                                           StreamObserver<RecommendedEventProto> responseObserver) {
         log.info("get recommendations for user");
 
-        List<RecommendedEventProto> recommendsEventProto = eventSimilarityService
-                .getRecommendationsForUser(userPredictionsRequestProto);
-
-        for (RecommendedEventProto recommendedEventProto : recommendsEventProto) {
-            responseObserver.onNext(recommendedEventProto);
-        }
+        eventSimilarityService.getRecommendationsForUser(userPredictionsRequestProto)
+                .forEach(responseObserver::onNext);
 
         responseObserver.onCompleted();
     }
@@ -35,12 +29,8 @@ public class RecommendationsController extends RecommendationsControllerGrpc.Rec
                                  StreamObserver<RecommendedEventProto> responseObserver) {
         log.info("get similar events");
 
-        List<RecommendedEventProto> recommendsEventProto = eventSimilarityService
-                .getSimilarEvents(similarEventsRequestProto);
-
-        for (RecommendedEventProto recommendedEventProto : recommendsEventProto) {
-            responseObserver.onNext(recommendedEventProto);
-        }
+        eventSimilarityService.getSimilarEvents(similarEventsRequestProto)
+                .forEach(responseObserver::onNext);
 
         responseObserver.onCompleted();
     }
@@ -50,12 +40,8 @@ public class RecommendationsController extends RecommendationsControllerGrpc.Rec
                                      StreamObserver<RecommendedEventProto> responseObserver) {
         log.info("get interactions count");
 
-        List<RecommendedEventProto> recommendsEventProto = eventSimilarityService
-                .getInteractionsCount(similarEventsRequestProto);
-
-        for (RecommendedEventProto recommendedEventProto : recommendsEventProto) {
-            responseObserver.onNext(recommendedEventProto);
-        }
+        eventSimilarityService.getInteractionsCount(similarEventsRequestProto)
+                .forEach(responseObserver::onNext);
 
         responseObserver.onCompleted();
     }

@@ -44,9 +44,7 @@ public class RecommendationsClient {
     public List<RecommendedEventProto> getInteractionsCount(List<Long> eventsId) {
         InteractionsCountRequestProto.Builder requestBuilder = InteractionsCountRequestProto.newBuilder();
 
-        for (Long eventId : eventsId) {
-            requestBuilder.addEventId(eventId);
-        }
+        eventsId.forEach(requestBuilder::addEventId);
 
         InteractionsCountRequestProto request = requestBuilder.build();
         Iterator<RecommendedEventProto> iterator = recommendationsClient.getInteractionsCount(request);

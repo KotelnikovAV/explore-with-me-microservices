@@ -123,7 +123,7 @@ public class EventServiceImpl implements EventService {
 
         EventFullDto eventFullDto = eventMapper.eventToEventFullDto(event);
 
-        saveUserAction(userId, List.of(eventId), ActionTypeProto.ACTION_VIEW);
+        userActionClient.collectUserAction(eventId, userId, ActionTypeProto.ACTION_VIEW);
 
         log.info("The event was found");
         return eventFullDto;
@@ -145,10 +145,10 @@ public class EventServiceImpl implements EventService {
 
         List<EventShortDto> eventsShortDto = eventMapper.listEventToListEventShortDto(events);
 
-        List<Long> eventsIds = eventsShortDto.stream()
+        eventsShortDto.stream()
                 .map(EventShortDto::getId)
-                .toList();
-        saveUserAction(userId, eventsIds, ActionTypeProto.ACTION_VIEW);
+                .forEach(eventId -> userActionClient
+                        .collectUserAction(eventId, userId, ActionTypeProto.ACTION_VIEW));
 
         log.info("The events was found");
         return eventsShortDto;
@@ -552,9 +552,7 @@ public class EventServiceImpl implements EventService {
         Map<Long, Double> mapEventsIdRating = ratingEvents.stream()
                 .collect(Collectors.toMap(RecommendedEventProto::getEventId, RecommendedEventProto::getScore));
 
-        for (Event event : events) {
-            event.setRating(mapEventsIdRating.getOrDefault(event.getId(), 0.0));
-        }
+        events.forEach(event -> event.setRating(mapEventsIdRating.getOrDefault(event.getId(), 0.0)));
     }
 
     private EventRequestStatusUpdateResultDto createEventRequestStatusUpdateResult(List<ParticipationRequestDto> requests) {
@@ -568,11 +566,5 @@ public class EventServiceImpl implements EventService {
         resultDto.setConfirmedRequests(confirmedRequests);
         resultDto.setRejectedRequests(rejectedRequests);
         return resultDto;
-    }
-
-    private void saveUserAction(long userId, List<Long> eventsId, ActionTypeProto actionType) {
-        for (Long eventId : eventsId) {
-            userActionClient.collectUserAction(eventId, userId, actionType);
-        }
     }
 }

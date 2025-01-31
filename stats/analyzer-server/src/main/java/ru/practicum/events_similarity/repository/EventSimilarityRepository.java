@@ -4,14 +4,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.events_similarity.model.EventSimilarity;
+import ru.practicum.events_similarity.model.EventSimilarityId;
 
 import java.util.List;
 
-public interface EventSimilarityRepository extends JpaRepository<EventSimilarity, Long> {
+public interface EventSimilarityRepository extends JpaRepository<EventSimilarity, EventSimilarityId> {
 
     @Query("select es " +
             "from EventSimilarity as es " +
-            "where (es.eventA = :targetEventId or es.eventB = :targetEventId) and (es.eventB not in :eventsId and es.eventA not in :eventsId) " +
+            "where (es.eventSimilarityId.eventA = :targetEventId or es.eventSimilarityId.eventB = :targetEventId) " +
+            "and (es.eventSimilarityId.eventB not in :eventsId and es.eventSimilarityId.eventA not in :eventsId) " +
             "group by es.score " +
             "order by es.score ")
     List<EventSimilarity> findEventSimilaritiesByEventsId(@Param("targetEventId") Long targetEventId,
@@ -19,7 +21,7 @@ public interface EventSimilarityRepository extends JpaRepository<EventSimilarity
 
     @Query("select es " +
             "from EventSimilarity as es " +
-            "where es.eventA in :eventsId and es.eventB not in :eventsId " +
+            "where es.eventSimilarityId.eventA in :eventsId and es.eventSimilarityId.eventB not in :eventsId " +
             "group by es.score " +
             "order by es.score desc " +
             "limit :limit ")
@@ -28,7 +30,7 @@ public interface EventSimilarityRepository extends JpaRepository<EventSimilarity
 
     @Query("select es " +
             "from EventSimilarity as es " +
-            "where es.eventA = :eventId " +
+            "where es.eventSimilarityId.eventA = :eventId " +
             "group by es.score " +
             "order by es.score desc " +
             "limit :limit ")

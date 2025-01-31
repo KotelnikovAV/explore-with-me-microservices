@@ -32,9 +32,7 @@ public class ConsumerEventsSimilarityConfig {
 
     private Properties getPropertiesForKafkaConsumer() {
         Properties config = new Properties();
-        for (String key : properties.keySet()) {
-            config.put(key, properties.get(key));
-        }
+        config.putAll(properties);
         config.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, VoidDeserializer.class.getCanonicalName());
         return config;
     }
