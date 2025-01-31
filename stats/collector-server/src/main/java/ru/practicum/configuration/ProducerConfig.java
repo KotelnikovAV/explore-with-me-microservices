@@ -26,9 +26,7 @@ public class ProducerConfig {
 
     private Properties getPropertiesForKafkaProducer() {
         Properties config = new Properties();
-        for (String key : properties.keySet()) {
-            config.put(key, properties.get(key));
-        }
+        config.putAll(properties);
         return config;
     }
 }

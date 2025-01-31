@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.events_similarity.mapper.EventSimilarityMapper;
 import ru.practicum.events_similarity.model.EventSimilarity;
+import ru.practicum.events_similarity.model.EventSimilarityId;
 import ru.practicum.events_similarity.repository.EventSimilarityRepository;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.proto.InteractionsCountRequestProto;
@@ -15,13 +16,13 @@ import ru.practicum.ewm.stats.proto.UserPredictionsRequestProto;
 import ru.practicum.user_action.model.ActionType;
 import ru.practicum.user_action.model.UserAction;
 import ru.practicum.user_action.repository.UserActionRepository;
+import ru.practicum.user_action.service.UserActionService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static ru.practicum.utility.Constants.*;
 
 @Slf4j
 @Service
@@ -30,15 +31,29 @@ public class EventSimilarityServiceImpl implements EventSimilarityService {
     private final EventSimilarityRepository eventSimilarityRepository;
     private final UserActionRepository userActionRepository;
     private final EventSimilarityMapper eventSimilarityMapper;
+    private final UserActionService userActionService;
 
     @Override
     @Transactional
     public void saveEventsSimilarity(List<EventSimilarityAvro> eventsSimilarityAvro) {
         log.info("Save events similarity");
 
-        List<EventSimilarity> eventsSimilarity = eventSimilarityMapper
-                .listEventSimilarityAvroToListEventSimilarity(eventsSimilarityAvro);
-        eventSimilarityRepository.saveAll(eventsSimilarity);
+        Map<EventSimilarityId, EventSimilarity> eventsSimilarity = eventSimilarityMapper
+                .listEventSimilarityAvroToListEventSimilarity(eventsSimilarityAvro).stream()
+                .collect(Collectors.toMap(EventSimilarity::getEventSimilarityId, Function.identity()));
+
+        List<EventSimilarity> eventsSimilarityFromDb = eventSimilarityRepository.findAllById(eventsSimilarity.keySet());
+
+        if (eventsSimilarityFromDb.size() != eventsSimilarityAvro.size()) {
+            List<EventSimilarity> newEventSimilarity = eventsSimilarity.values().stream()
+                    .filter(eventSimilarity -> !eventsSimilarityFromDb.contains(eventSimilarity))
+                    .toList();
+            eventSimilarityRepository.saveAll(newEventSimilarity);
+        }
+
+        eventsSimilarityFromDb.forEach(eventSimilarity -> eventSimilarity.setScore(eventsSimilarity
+                .get(eventSimilarity.getEventSimilarityId()).getScore()));
+
         log.info("Save events similarity");
     }
 
@@ -60,15 +75,16 @@ public class EventSimilarityServiceImpl implements EventSimilarityService {
         List<RecommendedEventProto> recommendedEventProtoList = new ArrayList<>();
 
         List<Long> eventsId = interactionsCountRequestProto.getEventIdList();
-        List<UserAction> usersAction = userActionRepository.findUserActionByEventIdIn(eventsId);
+        List<UserAction> usersActionsOnEvents = userActionRepository.findUserActionByEventIdIn(eventsId);
 
-        for (Long eventId : eventsId) {
-            double weight = usersAction.stream()
-                    .map(userAction -> getWeight(userAction.getActionType()))
-                    .reduce(0.0, Double::sum);
-
+        eventsId.forEach(eventId ->
+        {
+            double weight = usersActionsOnEvents.stream()
+                .filter(userAction -> userAction.getUserActionId().getEventId().equals(eventId))
+                .mapToDouble(userAction -> userActionService.getWeight(userAction.getActionType()))
+                .reduce(0.0, Double::sum);
             recommendedEventProtoList.add(buildRecommendedEventProto(eventId, weight));
-        }
+        });
 
         return recommendedEventProtoList;
     }
@@ -88,32 +104,13 @@ public class EventSimilarityServiceImpl implements EventSimilarityService {
         List<EventSimilarity> similarEventsWithoutUserInteraction = eventSimilarityRepository
                 .findSimilarEvents(eventsId, userPredictions.getMaxResults());
         List<Long> similarEventsId = similarEventsWithoutUserInteraction.stream()
-                .map(EventSimilarity::getEventB)
+                .map(eventSimilarity -> eventSimilarity.getEventSimilarityId().getEventB())
                 .toList();
 
-        for (Long eventId : similarEventsId) {
-            RecommendedEventProto recommendedEventProto = calculateRatingNewEvent(eventId, eventsId, userPredictions);
-            recommendedEventProtoList.add(recommendedEventProto);
-        }
+        similarEventsId.forEach(eventId -> recommendedEventProtoList
+                .add(calculateRatingNewEvent(eventId, eventsId, userPredictions)));
 
         return recommendedEventProtoList;
-    }
-
-    private double getWeight(ActionType actionType) {
-        switch (actionType) {
-            case VIEW -> {
-                return VIEWING_RATIO;
-            }
-            case REGISTER -> {
-                return REGISTRATION_RATIO;
-            }
-            case LIKE -> {
-                return LIKE_RATIO;
-            }
-            default -> {
-                return 0.0;
-            }
-        }
     }
 
     private double calculateEvaluationNewEvent(List<EventSimilarity> similarEventsFromUserInteraction,
@@ -122,9 +119,9 @@ public class EventSimilarityServiceImpl implements EventSimilarityService {
         double sumSimilarityCoefficients = 0.0;
 
         for (EventSimilarity eventSimilarity : similarEventsFromUserInteraction) {
-            sumWeightedEstimates = sumWeightedEstimates +
-                    eventSimilarity.getScore() * getWeight(eventsRating.get(eventSimilarity.getEventB()));
-            sumSimilarityCoefficients = sumSimilarityCoefficients + eventSimilarity.getScore();
+            sumWeightedEstimates += eventSimilarity.getScore() * userActionService
+                    .getWeight(eventsRating.get(eventSimilarity.getEventSimilarityId().getEventB()));
+            sumSimilarityCoefficients += eventSimilarity.getScore();
         }
 
         return sumWeightedEstimates / sumSimilarityCoefficients;
@@ -143,12 +140,13 @@ public class EventSimilarityServiceImpl implements EventSimilarityService {
         List<EventSimilarity> similarEventsFromUserInteraction = eventSimilarityRepository
                 .findNearestNeighbors(eventId, userPredictions.getMaxResults());
         List<Long> similarEventsIdFromUserInteraction = similarEventsFromUserInteraction.stream()
-                .map(EventSimilarity::getEventB)
+                .map(eventSimilarity -> eventSimilarity.getEventSimilarityId().getEventB())
                 .filter(eventsId::contains)
                 .toList();
         Map<Long, ActionType> eventsRating = userActionRepository
                 .findUserActionByEventIdIn(similarEventsIdFromUserInteraction).stream()
-                .collect(Collectors.toMap(UserAction::getEventId, UserAction::getActionType));
+                .collect(Collectors.toMap(userAction -> userAction.getUserActionId().getEventId(),
+                        UserAction::getActionType));
         double evaluationNewEvent = calculateEvaluationNewEvent(similarEventsFromUserInteraction, eventsRating);
 
         return buildRecommendedEventProto(eventId, evaluationNewEvent);

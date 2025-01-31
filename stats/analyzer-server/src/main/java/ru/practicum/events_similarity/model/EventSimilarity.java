@@ -1,6 +1,9 @@
 package ru.practicum.events_similarity.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -15,17 +18,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EventSimilarity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @NotNull
-    @Column
-    Long eventA;
-
-    @NotNull
-    @Column
-    Long eventB;
+    @EmbeddedId
+    EventSimilarityId eventSimilarityId;
 
     @NotNull
     @Column
@@ -33,13 +27,12 @@ public class EventSimilarity {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        EventSimilarity that = (EventSimilarity) o;
-        return Objects.equals(id, that.id);
+        if (!(o instanceof EventSimilarity that)) return false;
+        return Objects.equals(eventSimilarityId, that.eventSimilarityId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(eventSimilarityId);
     }
 }

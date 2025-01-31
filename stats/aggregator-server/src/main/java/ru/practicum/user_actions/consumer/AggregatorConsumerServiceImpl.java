@@ -36,12 +36,7 @@ public class AggregatorConsumerServiceImpl implements AggregatorConsumerService 
 
                 for (ConsumerRecord<Void, UserActionAvro> record : records) {
                     List<EventSimilarityAvro> eventsSimilarityAvro = aggregatorService.handleRecord(record);
-
-                    if (!eventsSimilarityAvro.isEmpty()) {
-                        for (EventSimilarityAvro eventSimilarityAvro : eventsSimilarityAvro) {
-                            aggregatorProducerService.aggregateUserActions(eventSimilarityAvro);
-                        }
-                    }
+                    eventsSimilarityAvro.forEach(aggregatorProducerService::aggregateUserActions);
                 }
 
                 consumer.commitAsync();
