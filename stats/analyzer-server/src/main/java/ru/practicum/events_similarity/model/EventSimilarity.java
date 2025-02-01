@@ -35,4 +35,11 @@ public class EventSimilarity {
     public int hashCode() {
         return Objects.hashCode(eventSimilarityId);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "EmbeddedId = " + eventSimilarityId + ", " +
+                "score = " + score + ")";
+    }
 }

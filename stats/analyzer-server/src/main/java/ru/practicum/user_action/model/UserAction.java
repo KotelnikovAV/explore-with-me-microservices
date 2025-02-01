@@ -38,4 +38,12 @@ public class UserAction {
     public int hashCode() {
         return Objects.hashCode(userActionId);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "EmbeddedId = " + userActionId + ", " +
+                "actionType = " + actionType + ", " +
+                "actionDate = " + actionDate + ")";
+    }
 }
