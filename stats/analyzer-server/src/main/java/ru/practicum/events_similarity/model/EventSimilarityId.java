@@ -34,4 +34,11 @@ public class EventSimilarityId implements Serializable {
     public int hashCode() {
         return Objects.hash(eventA, eventB);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "eventA = " + eventA + ", " +
+                "eventB = " + eventB + ")";
+    }
 }

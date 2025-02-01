@@ -34,4 +34,11 @@ public class UserActionId implements Serializable {
     public int hashCode() {
         return Objects.hash(userId, eventId);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "userId = " + userId + ", " +
+                "eventId = " + eventId + ")";
+    }
 }
