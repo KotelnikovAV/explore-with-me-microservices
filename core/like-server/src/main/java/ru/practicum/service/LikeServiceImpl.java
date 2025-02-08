@@ -18,7 +18,6 @@ import ru.practicum.model.Like;
 import ru.practicum.repository.LikeRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static ru.practicum.utility.Constants.*;
 
@@ -78,19 +77,15 @@ public class LikeServiceImpl implements LikeService {
 
         EventFullDto event = eventClient.findEventById(eventId);
 
-        Optional<Like> likeOptional = likeRepository.findByEventIdAndUserId(eventId, userId);
+        Like like = likeRepository.findByEventIdAndUserId(eventId, userId)
+                .orElseThrow(() -> new NotFoundException("You didn't rate this event"));
 
-        if (likeOptional.isPresent()) {
-            Like like = likeOptional.get();
-            if (like.getStatus() == statusLike) {
-                throw new RestrictionsViolationException("You have already " + statusLike + " this event");
-            }
-            like.setStatus(statusLike);
-            like.setCreated(LocalDateTime.now());
-            return changeRatingUserAndEvent(event, statusLike, DIFFERENCE_RATING_BY_UPDATE);
-        } else {
-            throw new NotFoundException("You didn't rate this event");
+        if (like.getStatus() == statusLike) {
+            throw new RestrictionsViolationException("You have already " + statusLike + " this event");
         }
+        like.setStatus(statusLike);
+        like.setCreated(LocalDateTime.now());
+        return changeRatingUserAndEvent(event, statusLike, DIFFERENCE_RATING_BY_UPDATE);
     }
 
     @Override
@@ -104,16 +99,13 @@ public class LikeServiceImpl implements LikeService {
 
         EventFullDto event = eventClient.findEventById(eventId);
 
-        Optional<Like> likeOptional = likeRepository.findByEventIdAndUserId(eventId, userId);
+        Like like = likeRepository.findByEventIdAndUserId(eventId, userId)
+                .orElseThrow(() -> new NotFoundException("You didn't rate this event"));
 
-        if (likeOptional.isPresent()) {
-            Like like = likeOptional.get();
-            StatusLike statusLike = like.getStatus();
-            likeRepository.delete(like);
-            changeRatingUserAndEvent(event, statusLike, DIFFERENCE_RATING_BY_DELETE);
-        } else {
-            throw new RestrictionsViolationException("You haven't reacted it yet");
-        }
+        StatusLike statusLike = like.getStatus();
+        likeRepository.delete(like);
+        changeRatingUserAndEvent(event, statusLike, DIFFERENCE_RATING_BY_DELETE);
+
         log.info("The reaction was deleted");
     }
 

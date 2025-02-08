@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "description": "Documentation \"Explore With Me\" API v1.0",
-    "title": "\"Explore With Me\" API сервер",
+    "description": "Documentation \"EventLink\" API v1.0",
+    "title": "\"EventLink\" API сервер",
     "version": "1.0"
   },
   "servers": [
@@ -47,6 +47,10 @@
     {
       "description": "API для работы с подборками событий",
       "name": "Admin: Подборки событий"
+    },
+    {
+      "description": "API для работы с лайками событий",
+      "name": "Private: Лайки событий"
     }
   ],
   "paths": {
@@ -1274,6 +1278,225 @@
         ]
       }
     },
+    "/event/{eventId}/like/{userId}": {
+      "post": {
+        "description": "Обратите внимание: пользователь, который ставит лайк, не должен быть публикатором этого события (Ожидается код 409), он должен быть участником этого события (Ожидается код 409) и у него не должен быть уже проставленный лайк (Ожидается код 404)",
+        "operationId": "addLike",
+        "parameters": [
+          {
+            "name": "id события, которому ставится лайк",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "id пользователя, который ставит лайк",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Реакция пользователя: LIKE или DISLIKE",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LIKE",
+                "DISLIKE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventFullDto"
+                }
+              }
+            },
+            "description": "Лайк поставлен"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required user or event was not found.",
+                  "message": "User/Event with id=321 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Пользователь или событие не найдено или недоступно"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "CONFLICT",
+                  "reason": "In order to like, you must be a participant in the event",
+                  "message": "In order to like, you must be a participant in the event",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Лайк не удовлетворяет правилам создания"
+          }
+        },
+        "summary": "Добавление нового лайка",
+        "tags": [
+          "Private: Лайки событий"
+        ]
+      },
+      "patch": {
+        "description": "Обратите внимание: у пользователя уже должна быть проставлена оценка (Ожидается код 404), обновляемая оценка должна быть противоположна поставленной ранее (Ожидается код 409)",
+        "operationId": "updateLike",
+        "parameters": [
+          {
+            "name": "id события, у которого обновляется оценка",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "id пользователя, который обновляет оценку",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "Новая реакция пользователя: LIKE или DISLIKE",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "LIKE",
+                "DISLIKE"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventFullDto"
+                }
+              }
+            },
+            "description": "Оценка обновлена"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required like was not found.",
+                  "message": "Like with id=283 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Оценка не найдена или недоступна"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "CONFLICT",
+                  "reason": "You have already like this event",
+                  "message": "You have already like this event",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Оценка не удовлетворяет правилам редактирования"
+          }
+        },
+        "summary": "Изменение оценки событию текущим пользователем",
+        "tags": [
+          "Private: Лайки событий"
+        ]
+      },
+      "delete": {
+        "description": "Обратите внимание: у пользователя уже должна быть проставлена оценка (Ожидается код 404)",
+        "operationId": "deleteLike",
+        "parameters": [
+          {
+            "name": "id события, оценку которого нужно удалить",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "id пользователя, оценку которого нужно удалить",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Лайк удален"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "You didn't rate this event",
+                  "message": "Like was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Категория не найдена или недоступна"
+          }
+        },
+        "summary": "Удаление оценки",
+        "tags": [
+          "Private: Лайки событий"
+        ]
+      }
+    },
     "/users/{userId}/events": {
       "get": {
         "description": "В случае, если по заданным фильтрам не найдено ни одного события, возвращает пустой список",
@@ -1766,6 +1989,58 @@
         ]
       }
     },
+    "/users/{userId}/events/{eventId}/recommendations": {
+      "get": {
+        "description": "В случае, если для данного пользователя не найдены рекомендации, возвращает пустой список",
+        "operationId": "findRecommendations",
+        "parameters": [
+          {
+            "name": "id текущего пользователя",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RecommendationsDto"
+                  }
+                }
+              }
+            },
+            "description": "Найдены рекомендации для текущего пользователя"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "NOT_FOUND",
+                  "reason": "The required recommendations was not found.",
+                  "message": "Recommendations for User with id=321 was not found",
+                  "timestamp": "2022-09-07 09:10:50"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            },
+            "description": "Событие не найдено или недоступно"
+          }
+        },
+        "summary": "Получение информации о рекомендуемых событиях для текущего пользователя",
+        "tags": [
+          "Private: События"
+        ]
+      }
+    },
     "/users/{userId}/requests": {
       "get": {
         "description": "В случае, если по заданным фильтрам не найдено ни одной заявки, возвращает пустой список",
@@ -2092,6 +2367,23 @@
           }
         },
         "description": "Сведения об ошибке"
+      },
+      "RecommendationsDto": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Идентификатор события",
+            "example": 1
+          },
+          "score": {
+            "type": "number",
+            "format": "double",
+            "description": "Предполагаемая оценка пользователя",
+            "example": 0.56
+          }
+        }
       },
       "CategoryDto": {
         "required": [

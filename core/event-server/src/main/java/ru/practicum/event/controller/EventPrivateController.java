@@ -73,7 +73,7 @@ public class EventPrivateController {
     }
 
     @GetMapping("/recommendations")
-    public List<RecommendationsDto> findRecommendations(@RequestHeader("X-EWM-USER-ID") long userId) {
+    public List<RecommendationsDto> findRecommendations(@PathVariable long userId) {
         log.info("Received a GET request to find recommendations");
         return eventService.findRecommendations(userId);
     }
