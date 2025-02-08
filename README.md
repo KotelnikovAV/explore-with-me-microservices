@@ -58,4 +58,4 @@
 - улучшение возможностей администрирования мероприятиями.
 
 ## 4. Техническая документация проекта.
-Спецификация API в формате openapi: [ewm-main-service-spec.json](https://github.com/user-attachments/files/18718734/ewm-main-service-spec.json)
+Спецификация API в формате openapi: [el-main-service-spec.json](https://github.com/user-attachments/files/18718734/ewm-main-service-spec.json)
