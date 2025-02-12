@@ -125,7 +125,7 @@
           "app": {
             "type": "string",
             "description": "Идентификатор сервиса для которого записывается информация",
-            "example": "ewm-main-service"
+            "example": "el-main-service"
           },
           "uri": {
             "type": "string",
@@ -150,7 +150,7 @@
           "app": {
             "type": "string",
             "description": "Название сервиса",
-            "example": "ewm-main-service"
+            "example": "el-main-service"
           },
           "uri": {
             "type": "string",
