@@ -53,4 +53,4 @@ Explore with me это платформа для поиска и обмена и
 После успешного исполнения файла docker-compose.yml приложение будет доступно на порту 8080.
 
 ## 3. Техническая документация проекта.
-Спецификация API в формате openapi:
+Спецификация API в формате openapi: [main-service-spec.json](https://github.com/user-attachments/files/19055434/main-service-spec.json)
